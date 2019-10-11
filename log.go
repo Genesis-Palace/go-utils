@@ -21,7 +21,7 @@ import (
 
 // Global logger config for debug
 var (
-	Logger = logging.MustGetLogger("Marmot")
+	Logger = logging.MustGetLogger("go-utils")
 
 	format = logging.MustStringFormatter(
 		"%{color}%{time:2006-01-02 15:04:05.000} %{longpkg}:%{longfunc} [%{level:.5s}]:%{color:reset} %{message}",
@@ -43,13 +43,13 @@ func init() {
 	backend := logging.NewLogBackend(os.Stderr, "", 0)
 	backendFormatter := logging.NewBackendFormatter(backend, format)
 	logging.SetBackend(backendFormatter)
-	logging.SetLevel(logging.INFO, "Marmot")
+	logging.SetLevel(logging.INFO, "go-utils")
 }
 
 // Set log level
 func SetLogLevel(level string) {
 	lvl, _ := logging.LogLevel(level)
-	logging.SetLevel(lvl, "Marmot")
+	logging.SetLevel(lvl, "go-utils")
 }
 
 // Return global log
