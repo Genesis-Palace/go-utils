@@ -1,4 +1,4 @@
-package log
+package go_utils
 
 import (
 	"github.com/op/go-logging"
