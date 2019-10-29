@@ -1,4 +1,4 @@
-package rds
+package go_utils
 
 import "github.com/go-redis/redis"
 
