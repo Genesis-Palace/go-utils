@@ -11,5 +11,6 @@ func NewRedisConf(host, password string, db int) *redis.Options {
 		Addr:     host,
 		Password: password,
 		DB:       db,
+		MaxRetries: 3,
 	}
 }
