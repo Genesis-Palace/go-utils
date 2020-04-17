@@ -32,7 +32,7 @@ type RedisOpts struct {
 }
 
 //NewRedis 实例化
-func NewRedis(opts *RedisOpts) *Redis {
+func NewRedisCache(opts *RedisOpts) *Redis {
 	pool := &redis.Pool{
 		MaxActive:   opts.MaxActive,
 		MaxIdle:     opts.MaxIdle,
