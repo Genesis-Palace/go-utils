@@ -21,7 +21,7 @@ type commandData struct {
     item    interface{}
     result  chan<- interface{}
     data    chan<- []interface{}
-    updater UpdateFunc
+    updater SUpdateFunc
 }
 
 type commandAction int
@@ -35,7 +35,7 @@ const (
     length
 )
 
-type UpdateFunc func(interface{}) interface{}
+type SUpdateFunc func(interface{}) interface{}
 
 type SafeSlice interface {
     Append(interface{})     // Append the given item to the slice
@@ -43,7 +43,7 @@ type SafeSlice interface {
     Close() []interface{}   // Close the channel and return the slice
     Delete(int)             // Delete the item at the given index position
     Len() int               // Return the number of items in the slice
-    Update(int, UpdateFunc) // Update the item at the given index position
+    Update(int, SUpdateFunc) // Update the item at the given index position
 }
 
 func NewSafeSlice() SafeSlice {
@@ -103,7 +103,7 @@ func (slice safeSlice) Len() int {
 }
 
 // If the updater calls a safeSlice method we will get deadlock!
-func (slice safeSlice) Update(index int, updater UpdateFunc) {
+func (slice safeSlice) Update(index int, updater SUpdateFunc) {
     slice <- commandData{action: update, index: index, updater: updater}
 }
 
