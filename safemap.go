@@ -51,7 +51,7 @@ type SafeMap interface {
 
 type UpdateFunc func(interface{}, bool) interface{}
 
-func New() SafeMap {
+func NewSafeMap() SafeMap {
     sm := make(safeMap) // type safeMap chan commandData
     go sm.run()
     return sm
