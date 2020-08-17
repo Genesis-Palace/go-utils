@@ -16,12 +16,11 @@ package go_utils
 type safeSlice chan scommandData
 
 type scommandData struct {
-	action  scommandAction
-	index   int
-	item    interface{}
-	result  chan<- interface{}
-	data    chan<- []interface{}
-	updater SUpdateFunc
+	action scommandAction
+	index  int
+	item   interface{}
+	result chan<- interface{}
+	data   chan<- []interface{}
 }
 
 type scommandAction int
@@ -30,7 +29,6 @@ const (
 	sinsert scommandAction = iota
 	sremove
 	sat
-	supdate
 	send
 	slength
 )
@@ -38,12 +36,11 @@ const (
 type SUpdateFunc func(interface{}) interface{}
 
 type SafeSlice interface {
-	Append(interface{})      // Append the given item to the slice
-	At(int) interface{}      // Return the item at the given index position
-	Close() []interface{}    // Close the channel and return the slice
-	Delete(int)              // Delete the item at the given index position
-	Len() int                // Return the number of items in the slice
-	Update(int, SUpdateFunc) // Update the item at the given index position
+	Append(interface{})   // Append the given item to the slice
+	At(int) interface{}   // Return the item at the given index position
+	Close() []interface{} // Close the channel and return the slice
+	Delete(int)           // Delete the item at the given index position
+	Len() int             // Return the number of items in the slice
 }
 
 func NewSafeSlice() SafeSlice {
@@ -71,10 +68,6 @@ func (slice safeSlice) run() {
 			}
 		case slength:
 			command.result <- len(list)
-		case supdate:
-			if 0 <= command.index && command.index < len(list) {
-				list[command.index] = command.updater(list[command.index])
-			}
 		case send:
 			close(slice)
 			command.data <- list
@@ -92,7 +85,7 @@ func (slice safeSlice) Delete(index int) {
 
 func (slice safeSlice) At(index int) interface{} {
 	reply := make(chan interface{})
-	slice <- scommandData{sat, index, nil, reply, nil, nil}
+	slice <- scommandData{sat, index, nil, reply, nil}
 	return <-reply
 }
 
@@ -100,11 +93,6 @@ func (slice safeSlice) Len() int {
 	reply := make(chan interface{})
 	slice <- scommandData{action: slength, result: reply}
 	return (<-reply).(int)
-}
-
-// If the updater calls a safeSlice method we will get deadlock!
-func (slice safeSlice) Update(index int, updater SUpdateFunc) {
-	slice <- scommandData{action: supdate, index: index, updater: updater}
 }
 
 func (slice safeSlice) Close() []interface{} {
