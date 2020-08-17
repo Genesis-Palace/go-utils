@@ -46,7 +46,7 @@ type SafeSlice interface {
     Update(int, UpdateFunc) // Update the item at the given index position
 }
 
-func New() SafeSlice {
+func NewSafeSlice() SafeSlice {
     slice := make(safeSlice)
     go slice.run()
     return slice
