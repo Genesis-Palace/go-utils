@@ -13,10 +13,10 @@
 
 package go_utils
 
-type safeSlice chan commandData
+type safeSlice chan scommandData
 
-type commandData struct {
-    action  commandAction
+type scommandData struct {
+    action  scommandAction
     index   int
     item    interface{}
     result  chan<- interface{}
@@ -24,10 +24,10 @@ type commandData struct {
     updater SUpdateFunc
 }
 
-type commandAction int
+type scommandAction int
 
 const (
-    insert commandAction = iota
+    insert scommandAction = iota
     remove
     at
     update
@@ -83,32 +83,32 @@ func (slice safeSlice) run() {
 }
 
 func (slice safeSlice) Append(item interface{}) {
-    slice <- commandData{action: insert, item: item}
+    slice <- scommandData{action: insert, item: item}
 }
 
 func (slice safeSlice) Delete(index int) {
-    slice <- commandData{action: remove, index: index}
+    slice <- scommandData{action: remove, index: index}
 }
 
 func (slice safeSlice) At(index int) interface{} {
     reply := make(chan interface{})
-    slice <- commandData{at, index, nil, reply, nil, nil}
+    slice <- scommandData{at, index, nil, reply, nil, nil}
     return <-reply
 }
 
 func (slice safeSlice) Len() int {
     reply := make(chan interface{})
-    slice <- commandData{action: length, result: reply}
+    slice <- scommandData{action: length, result: reply}
     return (<-reply).(int)
 }
 
 // If the updater calls a safeSlice method we will get deadlock!
 func (slice safeSlice) Update(index int, updater SUpdateFunc) {
-    slice <- commandData{action: update, index: index, updater: updater}
+    slice <- scommandData{action: update, index: index, updater: updater}
 }
 
 func (slice safeSlice) Close() []interface{} {
     reply := make(chan []interface{})
-    slice <- commandData{action: end, data: reply}
+    slice <- scommandData{action: end, data: reply}
     return <-reply
 }
